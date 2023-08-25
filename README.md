@@ -38,5 +38,3 @@ The application follows a client-server architecture with two main components:
 1. Clone the repository:
 
    https://github.com/NaveedAhmed55/secure-file-sharing-between-servers.git
-   git clone 
-   cd file-encryption-app
