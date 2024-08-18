@@ -17,8 +17,8 @@ function App() {
       });
 
       setEncryptedFileId(response.data.fileId);
-      alert("Encrypted file with id ",response.data.fileId)
-      setDecryptedFileLink(""); 
+      alert("Encrypted file with ID: " + response.data.fileId);
+      setDecryptedFileLink("");
     } catch (error) {
       console.error("Error encrypting and uploading file:", error);
     }
@@ -26,12 +26,21 @@ function App() {
 
   const requestDecryptedFile = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/decrypt-file/${encryptedFileId}`, null, {
+      const response = await axios.get(`http://localhost:3000/decrypt-file/${encryptedFileId}`, {
         responseType: "blob",
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
       setDecryptedFileLink(url);
+      
+      // Automatically trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `decrypted_file.${response.headers['content-type'].split('/')[1]}`); // Use the correct file extension
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
     } catch (error) {
       console.error("Error requesting decrypted file:", error);
     }
@@ -46,7 +55,6 @@ function App() {
         </label>
         <input
           type="file"
-          accept=".txt"
           className="w-full border rounded p-2 mb-4"
           onChange={(e) => encryptAndUploadFile(e.target.files[0])}
         />
@@ -62,7 +70,7 @@ function App() {
             <a
               className="text-blue-500"
               href={decryptedFileLink}
-              download="decrypted_file.txt"
+              download="decrypted_file"
             >
               Download Decrypted File
             </a>
